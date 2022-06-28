@@ -3466,13 +3466,23 @@ public class ImageMosaicReaderTest {
 
             // the harvest put the file in the same coverage
             assertEquals(1, reader.getGridCoverageNames().length);
-            File[] files = workDir.listFiles();
+            File[] files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove")
+                                            && file.getName().endsWith(".db")));
             assertNotNull(files);
-            assertEquals(16, files.length);
+            assertEquals(11, files.length);
 
             reader.removeCoverage(reader.getGridCoverageNames()[0], false);
             assertEquals(0, reader.getGridCoverageNames().length);
-            assertEquals(16, files.length);
+            files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove")
+                                            && file.getName().endsWith(".db")));
+            assertNotNull(files);
+            assertEquals(11, files.length);
         } finally {
             reader.dispose();
         }
@@ -3512,14 +3522,22 @@ public class ImageMosaicReaderTest {
 
         try {
             assertEquals(1, reader.getGridCoverageNames().length);
-            File[] files = workDir.listFiles();
+            File[] files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove2")
+                                            && file.getName().endsWith(".db")));
             assertNotNull(files);
-            assertEquals(16, files.length);
+            assertEquals(11, files.length);
 
             reader.removeCoverage(reader.getGridCoverageNames()[0], true);
             assertEquals(0, reader.getGridCoverageNames().length);
-            files = workDir.listFiles();
-            assertEquals(12, files.length);
+            files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove2")
+                                            && file.getName().endsWith(".db")));
+            assertEquals(7, files.length);
 
         } finally {
             reader.dispose();
@@ -3565,10 +3583,16 @@ public class ImageMosaicReaderTest {
 
             // delete all files associated to that mosaic (granules, auxiliary files, DB entries,
             // ...)
-            File[] files = workDir.listFiles();
-            assertEquals(15, files.length);
+            File[] files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove3")
+                                            && file.getName().endsWith(".db")));
+            assertNotNull(files);
+            assertEquals(10, files.length);
             reader.delete(true);
             files = workDir.listFiles();
+            assertNotNull(files);
             assertEquals(0, files.length);
         } finally {
             reader.dispose();
@@ -3612,10 +3636,20 @@ public class ImageMosaicReaderTest {
             assertNotNull(reader);
 
             // delete metadata only (auxiliary files, DB entries, ...)
-            File[] files = workDir.listFiles();
-            assertEquals(15, files.length);
+            File[] files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove4")
+                                            && file.getName().endsWith(".db")));
+            assertNotNull(files);
+            assertEquals(10, files.length);
             reader.delete(false);
-            files = workDir.listFiles();
+            files =
+                    workDir.listFiles(
+                            file ->
+                                    !(file.getName().startsWith("imagemosaicremove4")
+                                            && file.getName().endsWith(".db")));
+            assertNotNull(files);
             assertEquals(4, files.length);
         } finally {
             if (reader != null) {
