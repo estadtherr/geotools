@@ -210,11 +210,12 @@ public class ImageMosaicReader extends AbstractGridCoverage2DReader
 
                 // Cloning the hints
                 Hints localHints = new Hints(uHints);
-                if (localHints != null) {
-                    localHints.add(new Hints(Utils.MOSAIC_READER, this));
-                }
+                localHints.add(new Hints(Utils.MOSAIC_READER, this));
                 initReaderFromURL(source, localHints);
             } catch (Exception e) {
+                if (e instanceof DataSourceException) {
+                    throw (DataSourceException) e;
+                }
                 throw new DataSourceException(e);
             }
         }

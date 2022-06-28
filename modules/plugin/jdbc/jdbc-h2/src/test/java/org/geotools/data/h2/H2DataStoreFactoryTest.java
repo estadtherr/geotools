@@ -26,8 +26,6 @@ import static org.junit.Assert.fail;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.sql.DataSource;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.data.DataStore;
 import org.geotools.data.jdbc.datasource.ManageableDataSource;
 import org.geotools.jdbc.JDBCDataStore;
@@ -71,37 +69,13 @@ public class H2DataStoreFactoryTest {
     }
 
     @Test
-    public void testCreateDataStoreMVCC() throws Exception {
-        Map<String, Object> clonedParams = new HashMap<>(params);
-        clonedParams.put(H2DataStoreFactory.MVCC.key, true);
-        JDBCDataStore ds = null;
-        try {
-            ds = factory.createDataStore(clonedParams);
-            assertNotNull(ds);
-            final DataSource source = ds.getDataSource();
-            assertNotNull(source);
-            final DataSource wrapped = source.unwrap(DataSource.class);
-            assertNotNull(wrapped);
-            if (wrapped instanceof BasicDataSource) {
-                final BasicDataSource basicSource = (BasicDataSource) wrapped;
-                final String url = basicSource.getUrl();
-                assertTrue(url.contains("MVCC=true"));
-            }
-        } finally {
-            if (ds != null) {
-                ds.dispose();
-            }
-        }
-    }
-
-    @Test
     public void testTCP() throws Exception {
         // will fail on GitHub linux build, due to TCP port opening
         Assume.assumeFalse(Boolean.getBoolean("linux-github-build"));
 
         Map<String, Object> params = new HashMap<>();
         params.put(H2DataStoreFactory.HOST.key, "localhost");
-        params.put(H2DataStoreFactory.DATABASE.key, "geotools");
+        params.put(H2DataStoreFactory.DATABASE.key, "./geotools");
         params.put(H2DataStoreFactory.USER.key, "geotools");
         params.put(H2DataStoreFactory.PASSWD.key, "geotools");
 
@@ -119,7 +93,7 @@ public class H2DataStoreFactoryTest {
             }
         }
 
-        Server server = Server.createTcpServer(new String[] {"-baseDir", "target"});
+        Server server = Server.createTcpServer("-baseDir", "target", "-ifNotExists");
         server.start();
         try {
             while (!server.isRunning(false)) {

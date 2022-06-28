@@ -68,6 +68,11 @@ public class H2DialectBasic extends BasicSQLDialect {
     }
 
     @Override
+    public String[] getDesiredTablesType() {
+        return new String[] {"BASE TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY"};
+    }
+
+    @Override
     public void registerSqlTypeToClassMappings(Map<Integer, Class<?>> mappings) {
         delegate.registerSqlTypeToClassMappings(mappings);
     }

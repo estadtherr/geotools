@@ -56,10 +56,9 @@ public class GTDataStoreGranuleCatalog extends AbstractGTDataStoreGranuleCatalog
         Map<String, Serializable> dastastoreParams = Utils.filterDataStoreParams(params, spi);
 
         boolean isPostgis = Utils.isPostgisStore(spi);
-        // H2 workadound
+        // H2 workaround
         if (Utils.isH2Store(spi)) {
             Utils.fixH2DatabaseLocation(dastastoreParams, parentLocation);
-            Utils.fixH2MVCCParam(dastastoreParams);
         }
         if (isPostgis) {
             Utils.fixPostgisDBCreationParams(dastastoreParams);

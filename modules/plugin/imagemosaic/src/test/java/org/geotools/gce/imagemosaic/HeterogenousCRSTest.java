@@ -359,7 +359,7 @@ public class HeterogenousCRSTest {
         File testDirectory = crsMosaicFolder.newFolder(testLocation);
         FileUtils.copyDirectory(testDataFolder, testDirectory);
 
-        // to similate the deadlock we need a connection pool with just one connection,
+        // to simulate the deadlock we need a connection pool with just one connection,
         // a single request will cause the deadlock in this case (but we try with a pool
         // nevertheless, to be extra sure)
         File datastoreProperties = new File(testDirectory, "datastore.properties");

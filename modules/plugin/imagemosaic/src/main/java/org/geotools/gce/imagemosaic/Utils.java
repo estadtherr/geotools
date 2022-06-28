@@ -141,8 +141,6 @@ public class Utils {
 
     private static final String DATABASE_KEY = "database";
 
-    private static final String MVCC_KEY = "MVCC";
-
     public static final String DEFAULT_RANGE_READER =
             "it.geosolutions.imageioimpl.plugins.cog.HttpRangeReader";
 
@@ -308,7 +306,7 @@ public class Utils {
 
         /**
          * Sets if the target schema should be used to locate granules (default is FALSE)<br>
-         * {@value TRUE|FALSE}
+         * {@value "TRUE"|"FALSE"}
          */
         public static final String USE_EXISTING_SCHEMA = "UseExistingSchema";
 
@@ -1458,11 +1456,11 @@ public class Utils {
         //
         // //
         if (sourceFile != null) {
-            if (!sourceFile.isDirectory())
+            if (!sourceFile.isDirectory()) {
                 // real file, can only be a shapefile at this stage or a
                 // datastore.properties file
                 sourceURL = URLs.fileToUrl(sourceFile);
-            else {
+            } else {
                 // it's a DIRECTORY, let's look for a possible properties files
                 // that we want to load
                 final String locationPath = sourceFile.getAbsolutePath();
@@ -2266,13 +2264,6 @@ public class Utils {
 
     public static IOFileFilter getCleanupFilter() {
         return CLEANUP_FILTER;
-    }
-
-    public static void fixH2MVCCParam(Map<String, Serializable> params) {
-        if (params != null) {
-            // H2 database URLs must not be percent-encoded: see GEOT-4262.
-            params.put(MVCC_KEY, true);
-        }
     }
 
     public static void fixPostgisDBCreationParams(Map<String, Serializable> datastoreParams) {

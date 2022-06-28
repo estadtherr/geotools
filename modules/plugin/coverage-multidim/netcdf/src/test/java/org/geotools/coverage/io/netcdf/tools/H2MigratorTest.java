@@ -190,7 +190,6 @@ public class H2MigratorTest {
         final String mosaicDatabasePath = new File(testDir, "customDB").getAbsolutePath();
         Map<String, Object> sourceParams = new HashMap<>();
         sourceParams.put("database", mosaicDatabasePath);
-        sourceParams.put("MVCC", "true");
         final JDBCDataStore customStore = new H2DataStoreFactory().createDataStore(sourceParams);
         JDBCDataStore indexStore = null;
         try {
@@ -265,7 +264,6 @@ public class H2MigratorTest {
                 final String indexDatabasePath = new File(testDir, "target").getAbsolutePath();
                 sourceParams = new HashMap<>();
                 sourceParams.put("database", indexDatabasePath);
-                sourceParams.put("MVCC", "true");
 
                 indexStore = new H2DataStoreFactory().createDataStore(sourceParams);
                 repository.register("netcdfIndex", indexStore);

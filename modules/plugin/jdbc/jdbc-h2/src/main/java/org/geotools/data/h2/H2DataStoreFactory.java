@@ -85,13 +85,6 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
                     false,
                     false);
 
-    /**
-     * optional parameter to handle MVCC.
-     *
-     * @link http://www.h2database.com/html/advanced.html#mvcc
-     */
-    public static final Param MVCC = new Param("MVCC", Boolean.class, "MVCC", false, Boolean.FALSE);
-
     /** base location to store h2 database files */
     File baseDirectory = null;
 
@@ -185,7 +178,6 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
     protected String getJDBCUrl(Map<String, ?> params) throws IOException {
         String database = (String) DATABASE.lookUp(params);
         String host = (String) HOST.lookUp(params);
-        Boolean mvcc = (Boolean) MVCC.lookUp(params);
         Boolean autoServer = (Boolean) AUTO_SERVER.lookUp(params);
         String autoServerSpec = Boolean.TRUE.equals(autoServer) ? ";AUTO_SERVER=TRUE" : "";
 
@@ -198,9 +190,9 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
             }
         } else if (baseDirectory == null) {
             // use current working directory
-            return "jdbc:h2:" + database + autoServerSpec + (mvcc != null ? (";MVCC=" + mvcc) : "");
+            return "jdbc:h2:" + database + autoServerSpec;
         } else {
-            // use directory specified if the patch is relative
+            // use directory specified if the path is relative
             String location;
             if (!new File(database).isAbsolute()) {
                 location = new File(baseDirectory, database).getAbsolutePath();
@@ -208,10 +200,7 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
                 location = database;
             }
 
-            return "jdbc:h2:file:"
-                    + location
-                    + autoServerSpec
-                    + (mvcc != null ? (";MVCC=" + mvcc) : "");
+            return "jdbc:h2:file:" + location + autoServerSpec;
         }
     }
 
