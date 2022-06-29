@@ -29,7 +29,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
 
 /**
- * DataStoreFacotry for H2 database.
+ * DataStoreFactory for H2 database.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -168,7 +168,7 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
             dataSource.setPassword(password);
         }
 
-        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setDriverClassName(getDriverClassName());
         dataSource.setPoolPreparedStatements(false);
 
         return new DBCPDataSource(dataSource);
@@ -211,7 +211,7 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
         Boolean foreignKeys = (Boolean) ASSOCIATIONS.lookUp(params);
 
         if (foreignKeys != null) {
-            dataStore.setAssociations(foreignKeys.booleanValue());
+            dataStore.setAssociations(foreignKeys);
         }
 
         return dataStore;

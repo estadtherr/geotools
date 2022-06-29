@@ -54,7 +54,7 @@ import org.opengis.filter.FilterFactory;
 /** @author Simone Giannecchini, GeoSolutions SAS */
 public class CatalogSliceTest extends Assert {
 
-    private H2DataStoreFactory INTERNAL_STORE_SPI = new H2DataStoreFactory();
+    private final H2DataStoreFactory INTERNAL_STORE_SPI = new H2DataStoreFactory();
 
     private final FilterFactory ff = CommonFactoryFinder.getFilterFactory2();
 

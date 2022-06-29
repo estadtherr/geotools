@@ -90,6 +90,9 @@ public class H2Dialect extends SQLDialect {
         if ("GEOMETRY_COLUMNS".equalsIgnoreCase(tableName)) {
             return false;
         }
+        if ("INFORMATION_SCHEMA".equals(schemaName)) {
+            return false;
+        }
 
         return true;
     }
@@ -106,7 +109,7 @@ public class H2Dialect extends SQLDialect {
             String columnName = columnMetaData.getString("COLUMN_NAME");
 
             // look up in geometry columns table
-            StringBuffer sql = new StringBuffer("SELECT type FROM geometry_columns WHERE ");
+            StringBuilder sql = new StringBuilder("SELECT type FROM geometry_columns WHERE ");
             if (schemaName != null) {
                 sql.append("f_table_schema = '").append(schemaName).append("'").append(" AND ");
             }
@@ -154,7 +157,7 @@ public class H2Dialect extends SQLDialect {
     public void encodePostColumnCreateTable(AttributeDescriptor att, StringBuffer sql) {
         if (att instanceof GeometryDescriptor) {
             // try to narrow down the type with a comment
-            Class binding = att.getType().getBinding();
+            Class<?> binding = att.getType().getBinding();
             if (isConcreteGeometry(binding)) {
                 sql.append(" COMMENT '").append(binding.getSimpleName().toUpperCase()).append("'");
             }
@@ -206,10 +209,9 @@ public class H2Dialect extends SQLDialect {
                         LOGGER.log(Level.FINER, "Unable to look epsg code", e);
                     }
 
-                    StringBuffer sql = new StringBuffer();
+                    StringBuilder sql = new StringBuilder();
                     sql.append("CALL AddGeometryColumn(");
                     sql.append("'").append(schemaName).append("'");
-
                     sql.append(", '").append(tableName).append("'");
                     sql.append(", '").append(gd.getLocalName()).append("'");
                     sql.append(", ").append(epsg);
@@ -223,14 +225,9 @@ public class H2Dialect extends SQLDialect {
                     st.execute(sql.toString());
 
                     if (epsg != -1) {
-                        sql = new StringBuffer();
+                        sql = new StringBuilder();
                         sql.append("CALL CreateSpatialIndex(");
-                        if (schemaName == null) {
-                            sql.append("NULL");
-                        } else {
-                            sql.append("'").append(schemaName).append("'");
-                        }
-
+                        sql.append("'").append(schemaName).append("'");
                         sql.append(",'").append(tableName).append("'");
                         sql.append(",'").append(propertyName).append("'");
                         sql.append(",'").append(epsg).append("')");
@@ -283,7 +280,7 @@ public class H2Dialect extends SQLDialect {
 
         try {
             // drop the spatial index
-            StringBuffer sql = new StringBuffer();
+            StringBuilder sql = new StringBuilder();
             sql.append("CALL DropSpatialIndex(");
             if (schemaName == null) {
                 sql.append("NULL");
@@ -303,7 +300,7 @@ public class H2Dialect extends SQLDialect {
             }
 
             // remove the geometry metadata
-            sql = new StringBuffer();
+            sql = new StringBuilder();
             sql.append("CALL DropGeometryColumns(");
             if (schemaName == null) {
                 sql.append("NULL");
@@ -355,7 +352,7 @@ public class H2Dialect extends SQLDialect {
         encodeSchemaName(tableName, sql);
         sql.append(" WHERE ");
         encodeColumnName(null, columnName, sql);
-        sql.append(" is not null LIMIT 1");
+        sql.append(" IS NOT NULL LIMIT 1");
 
         dataStore.getLogger().fine(sql.toString());
         Statement st = cx.createStatement();
@@ -365,7 +362,7 @@ public class H2Dialect extends SQLDialect {
 
             try {
                 if (rs.next()) {
-                    return Integer.valueOf(rs.getInt(1));
+                    return rs.getInt(1);
                 } else {
                     // could not find o
                     return null;
@@ -424,7 +421,7 @@ public class H2Dialect extends SQLDialect {
         try {
             return new WKBReader(factory).read(bytes);
         } catch (ParseException e) {
-            throw (IOException) new IOException().initCause(e);
+            throw new IOException(e);
         }
 
         // return JTS.geometryFromBytes( bytes );
@@ -447,7 +444,7 @@ public class H2Dialect extends SQLDialect {
         sequenceName = sequenceName.toUpperCase();
         Statement st = cx.createStatement();
         try {
-            StringBuffer sql = new StringBuffer();
+            StringBuilder sql = new StringBuilder();
             sql.append("SELECT * FROM INFORMATION_SCHEMA.SEQUENCES ");
             sql.append("WHERE SEQUENCE_NAME = '").append(sequenceName).append("'");
 
@@ -503,14 +500,14 @@ public class H2Dialect extends SQLDialect {
     @Override
     public void applyLimitOffset(StringBuffer sql, int limit, int offset) {
         if (limit >= 0 && limit < Integer.MAX_VALUE) {
-            sql.append(" LIMIT " + limit);
+            sql.append(" LIMIT ").append(limit);
             if (offset > 0) {
-                sql.append(" OFFSET " + offset);
+                sql.append(" OFFSET ").append(offset);
             }
         } else if (offset > 0) {
             // H2 pretends to have limit specified along with offset
             sql.append(" LIMIT " + Integer.MAX_VALUE);
-            sql.append(" OFFSET " + offset);
+            sql.append(" OFFSET ").append(offset);
         }
     }
 
