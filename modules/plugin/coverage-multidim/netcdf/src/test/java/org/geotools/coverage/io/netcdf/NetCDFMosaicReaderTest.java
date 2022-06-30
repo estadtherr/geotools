@@ -1365,26 +1365,25 @@ public class NetCDFMosaicReaderTest {
         // have the reader harvest it
         ImageMosaicFormat format = new ImageMosaicFormat();
         ImageMosaicReader reader = format.getReader(mosaic);
-        GridCoverage2D coverage = null;
         assertNotNull(reader);
         try {
             assertEquals(2, reader.getGridCoverageNames().length);
 
-            File[] files = mosaic.listFiles();
-            assertEquals(15, files.length);
+            File[] files =
+                    mosaic.listFiles(
+                            (dir, name) -> !(name.startsWith("index.") && name.endsWith(".db")));
+            assertNotNull(files);
+            assertEquals(10, files.length);
 
             reader.dispose();
             reader = format.getReader(mosaic);
 
             reader.delete(false);
             files = mosaic.listFiles();
+            assertNotNull(files);
             assertEquals(1, files.length);
 
         } finally {
-            if (coverage != null) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) coverage.getRenderedImage());
-                coverage.dispose(true);
-            }
             reader.dispose();
         }
     }

@@ -332,7 +332,7 @@ public class H2MigratorTest {
         File h2Log = new File(logDir, "h2.txt");
         assertTrue(h2Log.exists());
         final List<String> h2List = Files.readLines(h2Log, UTF_8);
-        assertEquals(10, h2List.size());
+        assertEquals(4, h2List.size());
         assertThat(
                 h2List,
                 Matchers.everyItem(allOf(containsString("multi-coverage-"), endsWith(".db"))));
@@ -513,7 +513,7 @@ public class H2MigratorTest {
         File h2Log = new File(logDir, "h2.txt");
         assertTrue(h2Log.exists());
         final List<String> h2List = Files.readLines(h2Log, UTF_8);
-        assertEquals(20, h2List.size());
+        assertEquals(8, h2List.size());
         assertThat(h2List, Matchers.everyItem(allOf(endsWith(".db"))));
         // for extra measure, check and remove the H2 dbs, they should not be needed anymore
         for (String h2File : h2List) {
