@@ -24,8 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import org.geotools.geometry.jts.Geometries;
 import org.geotools.jdbc.JDBCDataStore;
@@ -60,6 +59,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class H2Dialect extends SQLDialect {
 
     public static String H2_SPATIAL_INDEX = "org.geotools.data.h2.spatialIndex";
+
+    private final List<String> possibleGeometryTypes =
+            Arrays.asList("BLOB", "BINARY LARGE OBJECT", "VARBINARY", "BINARY VARYING");
 
     public H2Dialect(JDBCDataStore dataStore) {
         super(dataStore);
@@ -103,7 +105,7 @@ public class H2Dialect extends SQLDialect {
         String typeName = columnMetaData.getString("TYPE_NAME");
         if ("UUID".equalsIgnoreCase(typeName)) {
             return UUID.class;
-        } else if ("BLOB".equalsIgnoreCase(typeName) || "VARBINARY".equalsIgnoreCase(typeName)) {
+        } else if (possibleGeometryTypes.stream().anyMatch(typeName::equalsIgnoreCase)) {
             String schemaName = columnMetaData.getString("TABLE_SCHEM");
             String tableName = columnMetaData.getString("TABLE_NAME");
             String columnName = columnMetaData.getString("COLUMN_NAME");
